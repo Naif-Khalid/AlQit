@@ -9,6 +9,7 @@ TagManager:
   - Whiteboard
   - canPickUp
   - Ground
+  - Canvas
   layers:
   - Default
   - TransparentFX

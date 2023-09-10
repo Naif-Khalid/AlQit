@@ -24,7 +24,7 @@ public class CameraControl : MonoBehaviour {
 
         //Cursor.lockState = CursorLockMode.Locked; //Locks Mouse In The Middle
 
-        //Cursor.Visible = false;
+        Cursor.visible = false;
     }
     void Update()
     {
@@ -97,6 +97,10 @@ public class CameraControl : MonoBehaviour {
             heldObjRb = pickUpObj.GetComponent<Rigidbody>(); //assign Rigidbody
             heldObjRb.isKinematic = true;
             heldObjRb.transform.parent = holdPos.transform; //parent object to holdposition
+            GameObject ClosestCanvas = FindClosestCanvas();
+            Vector3 HoldPos = getAxis(ClosestCanvas);
+            BrushZAxis = HoldPos.z;
+            Debug.Log(BrushZAxis);
             Debug.Log("Picking Up Done");
         }
     }
@@ -108,10 +112,33 @@ public class CameraControl : MonoBehaviour {
     }
         void MoveObject()
     {
+        float ratio = BrushZAxis/holdPos.transform.position.z;
         //keep object position the same as the holdPosition position
-        Vector3 HoldPosZ = new Vector3(holdPos.transform.position.x, holdPos.transform.position.y, BrushZAxis);
+        Vector3 HoldPosZ = new Vector3(holdPos.transform.position.x*ratio, holdPos.transform.position.y*ratio, BrushZAxis-0.2f);
         //heldObj.transform.position = holdPos.transform.position;
         heldObj.transform.position = HoldPosZ;
         heldObj.transform.rotation = new Quaternion(1,0,0,1);
+    }
+    public GameObject FindClosestCanvas()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("BrushInteraction");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
+    }
+    public Vector3 getAxis(GameObject GO){
+        return GO.transform.position;
     }
 }
